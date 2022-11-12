@@ -1,0 +1,13 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./:/srv/app
+    depends_on:
+      - mysql
+    environment:
+      MYSQL_HOST: 'mysql'
+    ports:
+      - '3000:3000'
