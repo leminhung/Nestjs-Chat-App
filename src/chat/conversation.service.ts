@@ -29,6 +29,11 @@ export class ConversationService {
     const result: Conversation = await this.conversationRepo.saveConversation(
       createConversationDTO,
     );
+    console.log(
+      chatGatewayConst.newMessageToUserChannel + result.receiverId,
+      result,
+    );
+
     this.chatGateway.wss.emit(
       chatGatewayConst.newMessageToUserChannel + result.receiverId,
       result,

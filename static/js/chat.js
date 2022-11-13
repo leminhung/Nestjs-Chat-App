@@ -12,8 +12,10 @@ var chat_open = false,
   unreadMessages = [],
   message_content = '',
   socket = null,
+  chatArea,
   lastSender = null,
-  onlineUsers = [];
+  listUsers = null;
+onlineUsers = [];
 
 const getMessages = () => {
   if (activeChat) {
@@ -34,11 +36,14 @@ socket = io('/chat', {
 
 // addUsersToView
 const addUsersToView = (user, lastMsg, senderName) => {
-  let listUsers = document.querySelector('.chat-list');
+  listUsers = document.querySelector('.chat-list');
   let item = document.createElement('div');
-  item.innerHTML = `
+  item.innerHTML =
+    `
     <!-- user lists -->
-    <div id="friends" class="friends ${user.id}">
+    <div id="friends" class="friends" onClick="chatWith(` +
+    user.id +
+    `)">
       <!-- photo -->
       <div class="profile friends-photo">
         <img src="images/MinhHung.jpg" alt="" />
@@ -82,7 +87,20 @@ const loadUsers = () => {
 };
 loadUsers();
 
+// Select user in list to chat
+const chatWith = id => {
+  chat_open = !chat_open;
+  // if (activeChat === u) return;
+  // unreadMessages[u.id] = [];
+  const user = users.find(u => u.id === id);
+  if (user) {
+    activeChat = user;
+    loadConversationsWith(user);
+  }
+};
+
 socket.on('message', msg => {
+  console.log('Msg', msg);
   receiveMessage(msg);
 });
 
@@ -95,6 +113,7 @@ socket.on('users/new', user => {
 });
 
 socket.on('newMessage/user/' + userData.data.userId, msg => {
+  console.log('newMsg', msg);
   receiveMessage(msg);
 });
 
@@ -141,16 +160,6 @@ const getUnreadCount = id => {
   return unreadMessages[id].length;
 };
 
-// chatWith
-const chatWith = u => {
-  chat_open = !chat_open;
-  if (activeChat === u) return;
-
-  activeChat = u;
-  unreadMessages[u.id] = [];
-  loadConversationsWith(u);
-};
-
 // Handle send message
 sendMessageElement.addEventListener('click', e => {
   e.preventDefault();
@@ -159,15 +168,18 @@ sendMessageElement.addEventListener('click', e => {
 
 // sendMessage
 const sendMessage = () => {
+  let chatItem = document.createElement('div');
   if (!activeChat) {
     alert('Select user first');
     return;
   }
 
-  if (message_content.trim() === '') {
+  var msg_content = document.querySelector('.type-area');
+  if (msg_content.value.trim() === '') {
     alert('Message could not be empty');
     return;
   }
+  console.log('active_chat--', activeChat);
   fetch('/v1/api/chat/' + activeChat.id + '/sendMessage', {
     method: 'POST',
     headers: {
@@ -175,16 +187,25 @@ const sendMessage = () => {
       Authorization: 'Bearer ' + userData.accessToken,
     },
     body: JSON.stringify({
-      message: message_content,
+      message: msg_content.value.trim(),
     }),
   })
     .then(resp => {
       loading = false;
       console.log(resp);
+
       if (resp.status === 201) {
         resp.json().then(data => {
           messages[activeChat.id].push(data);
-          message_content = '';
+          chatItem.innerHTML = `<!-- YOUR CHAT TEMPLATE -->
+          <div id="your-chat" class="your-chat">
+            <p class="your-chat-balloon">${msg_content.value.trim()}</p>
+            <p class="chat-datetime">
+              <span class="glyphicon glyphicon-ok"></span> Sun, Aug 30 | 15:45
+            </p>
+          </div>`;
+          chatArea.appendChild(chatItem.cloneNode(true));
+          msg_content.value = '';
           scrollToBottom();
         });
       } else {
@@ -201,9 +222,9 @@ const sendMessage = () => {
 const scrollToBottom = () => {
   setTimeout(() => {
     document.getElementsByClassName(
-      'chat-detail',
+      'chat-area',
     )[0].scrollTop = document.getElementsByClassName(
-      'chat-detail',
+      'chat-area',
     )[0].scrollHeight;
   }, 10);
 };
@@ -248,7 +269,7 @@ const loadMyConversations = () => {
             addUsersToView(
               u,
               lastSender?.content,
-              lastSender.senderId == u.id ? 'you: ' : '',
+              lastSender.senderId == u.id ? '' : 'you: ',
             );
             messages[u.id] = local;
             local = [];
@@ -265,10 +286,43 @@ const loadMyConversations = () => {
     });
 };
 
+// addMessageToView
+const addMessageToView = (user, conversations) => {
+  console.log('with: ', user.id);
+  console.log('conversations: ', conversations);
+  chatArea = document.querySelector('.chat-area');
+  let chatItem = document.createElement('div');
+  chatArea.innerHTML = '';
+  conversations.forEach(item => {
+    if (item.senderId == user.id)
+      chatItem.innerHTML = `<!-- FRIENDS CHAT TEMPLATE -->
+          <div id="friends-chat" class="friends-chat">
+            <div class="profile friends-chat-photo">
+              <img src="images/MinhHung.jpg" alt="" />
+            </div>
+            <div class="friends-chat-content">
+              <p class="friends-chat-name">${user.username}</p>
+              <p class="friends-chat-balloon">${item.content}</p>
+              <h5 class="chat-datetime">Sun, Aug 30 | 15:41</h5>
+            </div>
+          </div>`;
+    else
+      chatItem.innerHTML = `<!-- YOUR CHAT TEMPLATE -->
+          <div id="your-chat" class="your-chat">
+            <p class="your-chat-balloon">${item.content}</p>
+            <p class="chat-datetime">
+              <span class="glyphicon glyphicon-ok"></span> Sun, Aug 30 | 15:45
+            </p>
+          </div>`;
+    chatArea.appendChild(chatItem.cloneNode(true));
+  });
+  scrollToBottom();
+};
+
 // loadConversationsWith
-const loadConversationsWith = u => {
-  loading = true;
-  fetch('/v1/api/chat/' + u.id + '/messages', {
+const loadConversationsWith = user => {
+  // loading = true;
+  fetch('/v1/api/chat/' + user.id + '/messages', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -282,25 +336,18 @@ const loadConversationsWith = u => {
       }
 
       resp.json().then(data => {
-        if (!messages[u.id]) messages[u.id] = [];
-        messages[u.id] = Array.from(data);
+        if (!messages[user.id]) messages[user.id] = [];
+        messages[user.id] = Array.from(data);
         conversations = Array.from(data);
-        console.log('with', u.username);
-        loading = false;
-        scrollToBottom();
+        addMessageToView(user, conversations);
+        // loading = false;
       });
     })
     .catch(err => {
       console.log(err);
-      loading = false;
+      // loading = false;
     });
 };
-
-const selectUserToChatElement = document.querySelector('#friends');
-selectUserToChatElement.addEventListener('click', e => {
-  e.preventDefault();
-  console.log('Helllofdfuduf');
-});
 
 $('.friend-drawer--onhover').on('click', function() {
   $('.chat-bubble')
