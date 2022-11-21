@@ -6,7 +6,6 @@ import { Conversation } from './conversation.entity';
 import { CreateConversationDTO } from './dto/create-conversation.dto';
 import { User } from '../user/user.entity';
 import { ChatGateway } from './chat.gateway';
-import { chatGatewayConst } from '../config/chat.config';
 import { MarkAsReadConversationDTO } from './dto/markAsRead.dto';
 
 Injectable();

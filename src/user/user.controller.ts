@@ -13,11 +13,11 @@ import { FilterUserDTO } from './dto/filter-user.dto';
 
 @Controller('users')
 @ApiTags('Users Managnement')
-@UseGuards(AuthGuard())
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @ApiOkResponse({
     isArray: true,

@@ -1,22 +1,24 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConversationRepository } from './conversation.repository';
 import { ConversationService } from './conversation.service';
 import { ChatController } from './chat.controller';
 import { ChatGateway } from './chat.gateway';
-import { AuthModule } from 'src/auth/auth.module';
-import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from 'src/user/user.repository';
-import { UserModule } from 'src/user/user.module';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from 'src/config/jwt.config';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ConversationRepository]),
-    AuthModule,
-    forwardRef(() => UserModule),
+    JwtModule.register({
+      secret: jwtConstants.secret,
+      signOptions: jwtConstants.signOptions,
+    }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   controllers: [ChatController],
-  providers: [ConversationService, ChatGateway, JwtService, UserRepository],
-  exports: [ChatGateway, AuthModule],
+  providers: [ConversationService, ChatGateway, ConversationRepository],
+  exports: [ChatGateway],
 })
 export class ChatModule {}

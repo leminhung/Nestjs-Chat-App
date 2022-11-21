@@ -30,7 +30,7 @@ import {
 } from '@nestjs/swagger';
 
 @Controller('chat')
-@UseGuards(AuthGuard())
+@UseGuards(AuthGuard('jwt'))
 @ApiTags('Chat Managment')
 @ApiResponse({
   status: 401,

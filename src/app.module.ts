@@ -8,11 +8,11 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(TYPEORMCONFIG),
-    ChatModule,
-    UploadModule,
-    UserModule,
     AuthModule,
+    ChatModule,
+    TypeOrmModule.forRoot(TYPEORMCONFIG),
+    UserModule,
+    UploadModule,
   ],
 })
 export class AppModule {}

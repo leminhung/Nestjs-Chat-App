@@ -7,7 +7,7 @@ import { ChatModule } from '../chat/chat.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserRepository]), ChatModule],
-  providers: [UserService],
+  providers: [UserService, UserRepository],
   exports: [UserService],
   controllers: [UserController],
 })

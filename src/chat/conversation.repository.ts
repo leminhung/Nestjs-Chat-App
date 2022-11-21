@@ -1,4 +1,5 @@
-import { Repository, EntityRepository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 import { Conversation } from './conversation.entity';
 import { CreateConversationDTO } from './dto/create-conversation.dto';
 import { FilterConversation } from './dto/filter-conversation.dto';
@@ -6,8 +7,12 @@ import { User } from '../user/user.entity';
 import { UnauthorizedException } from '@nestjs/common';
 import { MarkAsReadConversationDTO } from './dto/markAsRead.dto';
 
-@EntityRepository(Conversation)
+@Injectable()
 export class ConversationRepository extends Repository<Conversation> {
+  constructor(private dataSource: DataSource) {
+    super(Conversation, dataSource.createEntityManager());
+  }
+
   async getConversation(
     senderId: number,
     receiverId: number,
