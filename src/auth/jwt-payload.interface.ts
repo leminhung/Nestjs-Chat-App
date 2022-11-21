@@ -1,35 +1,33 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class JwtPayload {
-  @ApiModelProperty()
+  @ApiProperty()
   username: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   email: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   id: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   country: string;
 
-  @ApiModelProperty({
-    description: 'token issued Date',
-    example: 1452244,
+  @ApiProperty({
+    name: 'token issued Date',
   })
   iat: number;
 
-  @ApiModelProperty({
-    description: 'Token expiration Date',
-    example: 1455000,
+  @ApiProperty({
+    name: 'Token expiration Date',
   })
   exp: number;
 }
 
 export class JwtPayloadReponse {
-  @ApiModelProperty()
+  @ApiProperty()
   access_token: string;
 
-  @ApiModelProperty({ type: JwtPayload })
+  @ApiProperty()
   data: JwtPayload;
 }

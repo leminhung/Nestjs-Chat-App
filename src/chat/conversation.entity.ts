@@ -1,49 +1,42 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ColumnType,
-  CreateDateColumn,
-} from 'typeorm';
-import { ParseIntPipe } from '@nestjs/common';
-import { IsNotEmpty, IsNumber, IsDate } from 'class-validator';
-import { ApiModelProperty } from '@nestjs/swagger';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { IsNotEmpty, IsNumber } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 @Entity('conversations')
 export class Conversation {
   @PrimaryGeneratedColumn()
   @IsNotEmpty()
   @IsNumber()
-  @ApiModelProperty()
+  @ApiProperty()
   id: number;
 
   @Column()
-  @ApiModelProperty()
+  @ApiProperty()
   content: string;
 
   @Column()
   @IsNotEmpty()
   @IsNumber()
-  @ApiModelProperty()
+  @ApiProperty()
   senderId: number;
 
   @Column()
   @IsNotEmpty()
   @IsNumber()
-  @ApiModelProperty()
+  @ApiProperty()
   receiverId: number;
 
   @Column({
     type: 'varchar',
-    default: new Date().toISOString(),
+    default: new Date().toString(),
   })
-  @ApiModelProperty()
+  @ApiProperty()
   createdAt: string;
 
   @Column({
     type: 'varchar',
     default: null,
   })
-  @ApiModelProperty()
+  @ApiProperty()
   readAt: string;
 
   // @Column({

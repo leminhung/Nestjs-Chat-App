@@ -60,6 +60,7 @@ export class ConversationRepository extends Repository<Conversation> {
     conversation.senderId = senderId;
     conversation.receiverId = receiverId;
     conversation.content = message;
+
     return this.save(conversation);
   }
 

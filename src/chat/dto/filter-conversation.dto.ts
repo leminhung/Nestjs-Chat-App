@@ -1,15 +1,15 @@
-import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class FilterConversation {
-  @ApiModelPropertyOptional()
+  @ApiPropertyOptional()
   before?: Date;
 
-  @ApiModelPropertyOptional()
+  @ApiPropertyOptional()
   after?: Date;
 
-  @ApiModelPropertyOptional()
+  @ApiPropertyOptional()
   limit?: number;
 
-  @ApiModelPropertyOptional()
+  @ApiPropertyOptional()
   page?: number;
 }

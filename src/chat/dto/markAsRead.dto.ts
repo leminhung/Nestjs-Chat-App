@@ -1,16 +1,16 @@
 import { IsNotEmpty } from 'class-validator';
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class MarkAsReadConversationDTO {
   @IsNotEmpty()
-  @ApiModelProperty()
+  @ApiProperty()
   senderId: number;
 
   @IsNotEmpty()
-  @ApiModelProperty()
+  @ApiProperty()
   receiverId: number;
 
   @IsNotEmpty()
-  @ApiModelProperty({ type: String })
+  @ApiProperty()
   createdAt: Date;
 }

@@ -18,12 +18,18 @@ async function bootstrap() {
 
   const options = new DocumentBuilder()
     .setTitle('OpenRestApi Documentation')
-    .setBasePath('v1/api')
-    .addBearerAuth('Authorization', 'header')
-    .setDescription(
-      'This API has beenn created to help developpers to prototypate theirs apps easily',
+    .addServer('v1/api')
+    .addBearerAuth(
+      {
+        description: `This API has beenn created to help developers to prototypate theirs apps easily`,
+        name: 'Authorization',
+        bearerFormat: 'Bearer',
+        scheme: 'Bearer',
+        type: 'http',
+        in: 'Header',
+      },
+      'header',
     )
-    .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   const swaggerCustomOprions: SwaggerCustomOptions = {

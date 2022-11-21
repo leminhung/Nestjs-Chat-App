@@ -1,10 +1,15 @@
-import { Repository, EntityRepository, QueryBuilder } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 import { User } from './user.entity';
 import { FilterUserDTO } from './dto/filter-user.dto';
 
-@EntityRepository(User)
+@Injectable()
 export class UserRepository extends Repository<User> {
-  getUsers(filter: FilterUserDTO): User[] | PromiseLike<User[]> {
+  constructor(private dataSource: DataSource) {
+    super(User, dataSource.createEntityManager());
+  }
+
+  async getUsers(filter: FilterUserDTO): Promise<User[]> {
     const query = this.createQueryBuilder('users');
     if (filter !== null) {
       if (filter.search) {
@@ -23,6 +28,7 @@ export class UserRepository extends Repository<User> {
         query.limit(filter.limit);
       }
     }
-    return query.getMany();
+
+    return await query.getMany();
   }
 }

@@ -19,19 +19,19 @@ import { Get, ValidationPipe } from '@nestjs/common';
 import { Conversation } from './conversation.entity';
 import { MarkAsReadConversationDTO } from './dto/markAsRead.dto';
 import {
-  ApiUseTags,
-  ApiImplicitParam,
+  ApiTags,
+  ApiParam,
   ApiResponse,
-  ApiImplicitQuery,
+  ApiQuery,
   ApiBearerAuth,
-  ApiImplicitBody,
+  ApiBody,
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
 
 @Controller('chat')
-@UseGuards(AuthGuard('jwt'))
-@ApiUseTags('Chat Managment')
+@UseGuards(AuthGuard())
+@ApiTags('Chat Managment')
 @ApiResponse({
   status: 401,
   description: 'Unauthorized',
@@ -41,11 +41,15 @@ export class ChatController {
   constructor(private conversationService: ConversationService) {}
 
   @Post(':receiverId/sendMessage')
-  @ApiImplicitParam({ name: 'receiverId', type: Number })
-  @ApiImplicitBody({ name: 'message', type: String })
+  // @ApiParam({
+  //   enumName: 'receiverId',
+  //   type: Number,
+  //   name: 'receiverId',
+  // })
+  @ApiBody({ type: String })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiOperation({
-    title: 'Send message to the specified ReceiverId uSER',
+    summary: 'Send message to the specified ReceiverId uSER',
   })
   sendMessage(
     @GetUser() user: User,
@@ -60,10 +64,11 @@ export class ChatController {
   }
 
   @Get(':receiverId/messages')
-  @ApiImplicitParam({ name: 'receiverId', type: Number })
+  // @ApiParam({ name: 'receiverId', type: Number })
   @ApiOkResponse({ type: Conversation, isArray: true })
   @ApiOperation({
-    title: 'Retrieve all messages of the current user with the receiverId user',
+    summary:
+      'Retrieve all messages of the current user with the receiverId user',
   })
   getMessages(
     @GetUser() user: User,
@@ -79,23 +84,24 @@ export class ChatController {
 
   @Get('messages')
   @ApiOkResponse({ type: Conversation, isArray: true })
-  @ApiOperation({ title: 'Retrieve all messages of the current user' })
+  @ApiOperation({ summary: 'Retrieve all messages of the current user' })
   getMyMessages(@GetUser() user: User, @Query() filter: FilterConversation) {
     return this.conversationService.getConversation(user.id, null, filter);
   }
 
   @Post(':receiverId/markAsRead')
   @ApiOperation({
-    title: 'Mark all message before the current as read (in this conversation)',
+    summary:
+      'Mark all message before the current as read (in this conversation)',
   })
   markAsRead(@Body(ValidationPipe) conversation: MarkAsReadConversationDTO) {
     return this.conversationService.markAllBeforeAsRead(conversation);
   }
 
   @Delete('delete/:conversationId')
-  @ApiImplicitQuery({ name: 'receiverId', type: Number })
-  @ApiImplicitQuery({ name: 'conversationId', type: Number })
-  @ApiOperation({ title: 'Delete the Specified Message ' })
+  @ApiQuery({ name: 'receiverId', type: Number })
+  @ApiQuery({ name: 'conversationId', type: Number })
+  @ApiOperation({ summary: 'Delete the Specified Message ' })
   delete(@Query(ParseIntPipe) conversationId: number, @GetUser() user: User) {
     return this.conversationService.deleteConversation(conversationId, user);
   }

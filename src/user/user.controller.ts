@@ -1,10 +1,10 @@
 import { Controller, Get, UseGuards, Query } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { User } from './user.entity';
 import { GetUser } from '../auth/get-user.decorator';
-import { AuthGuard } from '@nestjs/passport';
 import {
-  ApiUseTags,
+  ApiTags,
   ApiOkResponse,
   ApiResponse,
   ApiBearerAuth,
@@ -12,12 +12,12 @@ import {
 import { FilterUserDTO } from './dto/filter-user.dto';
 
 @Controller('users')
-@ApiUseTags('Users Managnement')
+@ApiTags('Users Managnement')
+@UseGuards(AuthGuard())
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @ApiOkResponse({
     isArray: true,
@@ -32,12 +32,14 @@ export class UserController {
     @Query() filter: FilterUserDTO,
   ): Promise<User[]> {
     const users: User[] = await this.userService.getUsers(filter);
+    console.log('user---', user);
+
     return users
-      .map(u => {
+      .map((u) => {
         delete u.password;
         delete u.salt;
         return u;
       })
-      .filter(u => u.id !== user.id);
+      .filter((u) => u.id !== user.id);
   }
 }

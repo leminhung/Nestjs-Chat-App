@@ -1,18 +1,18 @@
-import { ApiModelPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class FilterUserDTO {
-  @ApiModelPropertyOptional()
+  @ApiPropertyOptional()
   search?: string;
 
-  @ApiModelPropertyOptional()
+  @ApiPropertyOptional()
   before?: Date;
 
-  @ApiModelPropertyOptional()
+  @ApiPropertyOptional()
   after?: Date;
 
-  @ApiModelPropertyOptional()
+  @ApiPropertyOptional()
   limit?: number;
 
-  @ApiModelPropertyOptional()
+  @ApiPropertyOptional()
   page?: number;
 }

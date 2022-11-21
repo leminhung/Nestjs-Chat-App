@@ -12,8 +12,9 @@ var chat_open = false,
   unreadMessages = [],
   message_content = '',
   socket = null,
-  chatArea,
+  chatArea = document.querySelector('.chat-area'),
   lastSender = null,
+  chatItem = document.createElement('div'),
   listUsers = null;
 onlineUsers = [];
 
@@ -73,47 +74,45 @@ const loadUsers = () => {
       Authorization: 'Bearer ' + userData.accessToken,
     },
   })
-    .then(resp => {
+    .then((resp) => {
       loading = false;
-      resp.json().then(data => {
+      resp.json().then((data) => {
         users = data;
+        console.log('users--', users);
         loadMyConversations();
       });
     })
-    .catch(err => {
-      console.log(err);
+    .catch((err) => {
+      console.log('err--', err);
       loading = false;
     });
 };
 loadUsers();
 
 // Select user in list to chat
-const chatWith = id => {
+const chatWith = (id) => {
   chat_open = !chat_open;
-  // if (activeChat === u) return;
-  // unreadMessages[u.id] = [];
-  const user = users.find(u => u.id === id);
+  const user = getUserById(id);
   if (user) {
     activeChat = user;
     loadConversationsWith(user);
   }
 };
 
-socket.on('message', msg => {
+socket.on('message', (msg) => {
   console.log('Msg', msg);
   receiveMessage(msg);
 });
 
-socket.on('users/online', usersId => {
+socket.on('users/online', (usersId) => {
   updateOnlineUsers(usersId);
 });
 
-socket.on('users/new', user => {
+socket.on('users/new', (user) => {
   users.push(user);
 });
 
-socket.on('newMessage/user/' + userData.data.userId, msg => {
-  console.log('newMsg', msg);
+socket.on(`newMessage/user/${userData.data.id}`, (msg) => {
   receiveMessage(msg);
 });
 
@@ -123,52 +122,18 @@ const filterUsers = () => {
     return users;
   }
   return users.filter(
-    u => u.username.includes(query) || u.country.includes(query),
+    (u) => u.username.includes(query) || u.country.includes(query),
   );
 };
 
-// isOnline
-const isOnline = id => {
-  return onlineUsers.indexOf(id) !== -1;
-};
-
-// updateOnlineUsers
-const updateOnlineUsers = usersId => {
-  console.log(usersId);
-  onlineUsers = usersId;
-};
-
-// logout
-const logout = () => {
-  localStorage.removeItem('userData');
-  location.href = './signin.html';
-};
-
-// getLet
-const getLet = id => {
-  if (!messages[id]) return 0;
-
-  return messages[id].length;
-};
-
-// getUnreadCount
-const getUnreadCount = id => {
-  if (!unreadMessages[id]) {
-    unreadMessages[id] = [];
-    return 0;
-  }
-  return unreadMessages[id].length;
-};
-
 // Handle send message
-sendMessageElement.addEventListener('click', e => {
+sendMessageElement.addEventListener('click', (e) => {
   e.preventDefault();
   sendMessage();
 });
 
 // sendMessage
 const sendMessage = () => {
-  let chatItem = document.createElement('div');
   if (!activeChat) {
     alert('Select user first');
     return;
@@ -179,7 +144,6 @@ const sendMessage = () => {
     alert('Message could not be empty');
     return;
   }
-  console.log('active_chat--', activeChat);
   fetch('/v1/api/chat/' + activeChat.id + '/sendMessage', {
     method: 'POST',
     headers: {
@@ -190,21 +154,13 @@ const sendMessage = () => {
       message: msg_content.value.trim(),
     }),
   })
-    .then(resp => {
+    .then((resp) => {
       loading = false;
       console.log(resp);
 
       if (resp.status === 201) {
-        resp.json().then(data => {
+        resp.json().then((data) => {
           messages[activeChat.id].push(data);
-          chatItem.innerHTML = `<!-- YOUR CHAT TEMPLATE -->
-          <div id="your-chat" class="your-chat">
-            <p class="your-chat-balloon">${msg_content.value.trim()}</p>
-            <p class="chat-datetime">
-              <span class="glyphicon glyphicon-ok"></span> Sun, Aug 30 | 15:45
-            </p>
-          </div>`;
-          chatArea.appendChild(chatItem.cloneNode(true));
           msg_content.value = '';
           scrollToBottom();
         });
@@ -212,32 +168,43 @@ const sendMessage = () => {
         alert('An error occured');
       }
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
       loading = false;
     });
 };
 
-// scrollToBottom
-const scrollToBottom = () => {
-  setTimeout(() => {
-    document.getElementsByClassName(
-      'chat-area',
-    )[0].scrollTop = document.getElementsByClassName(
-      'chat-area',
-    )[0].scrollHeight;
-  }, 10);
-};
-
 // receiveMessage
-const receiveMessage = msg => {
-  if (!messages[msg.senderId]) messages[msg.senderId] = [];
-  messages[msg.senderId].push(msg);
-  if (!activeChat || (activeChat && msg.senderId !== activeChat.id)) {
-    unreadMessages[msg.senderId]
-      ? unreadMessages[msg.senderId]++
-      : (unreadMessages[msg.senderId] = 1);
-  }
+const receiveMessage = (msg) => {
+  const user = getUserById(msg.senderId);
+  const date = convertDateTime(msg.createdAt);
+
+  if (userData.data.id === msg.receiverId)
+    chatArea.innerHTML += `
+          <div id="friends-chat" class="friends-chat">
+            <div class="profile friends-chat-photo">
+              <img src="images/MinhHung.jpg" alt="" />
+            </div>
+            <div class="friends-chat-content">
+              <p class="friends-chat-name">${user?.username}</p>
+              <p class="friends-chat-balloon">${msg.content}</p>
+              <h5 class="chat-datetime">${date.d}, ${date.m} ${date.day} | ${date.t}</h5>
+            </div>
+          </div>`;
+  else if (userData.data.id === msg.senderId)
+    chatArea.innerHTML += `
+        <div id="your-chat" class="your-chat">
+          <p class="your-chat-balloon">${msg.content}</p>
+          <p class="chat-datetime">
+            <span class="glyphicon glyphicon-ok"></span> ${date.d}, ${date.m} ${date.day} | ${date.t}
+          </p>
+        </div>`;
+
+  // if (!activeChat || (activeChat && msg.senderId !== activeChat.id)) {
+  //   unreadMessages[msg.senderId]
+  //     ? unreadMessages[msg.senderId]++
+  //     : (unreadMessages[msg.senderId] = 1);
+  // }
 
   scrollToBottom();
 };
@@ -251,14 +218,13 @@ const loadMyConversations = () => {
       Authorization: 'Bearer ' + userData.accessToken,
     },
   })
-    .then(resp => {
-      console.log(resp.status);
+    .then((resp) => {
       loading = false;
       if (resp.status === 200 || resp.status === 304) {
-        resp.json().then(data => {
-          users.forEach(u => {
+        resp.json().then((data) => {
+          users.forEach((u) => {
             let local = [];
-            data.forEach(m => {
+            data.forEach((m) => {
               if (!messages[m.senderId]) messages[m.senderId] = [];
               if (u.id === m.senderId || u.id === m.receiverId) {
                 local.push(m);
@@ -280,7 +246,7 @@ const loadMyConversations = () => {
         location.href = './signin.html';
       }
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
       loading = false;
     });
@@ -289,13 +255,13 @@ const loadMyConversations = () => {
 // addMessageToView
 const addMessageToView = (user, conversations) => {
   console.log('with: ', user.id);
-  console.log('conversations: ', conversations);
-  chatArea = document.querySelector('.chat-area');
-  let chatItem = document.createElement('div');
+  chatItem = document.createElement('div');
+
   chatArea.innerHTML = '';
-  conversations.forEach(item => {
+  conversations.forEach((item) => {
+    const date = convertDateTime(item.createdAt);
     if (item.senderId == user.id)
-      chatItem.innerHTML = `<!-- FRIENDS CHAT TEMPLATE -->
+      chatArea.innerHTML += `<!-- FRIENDS CHAT TEMPLATE -->
           <div id="friends-chat" class="friends-chat">
             <div class="profile friends-chat-photo">
               <img src="images/MinhHung.jpg" alt="" />
@@ -303,24 +269,23 @@ const addMessageToView = (user, conversations) => {
             <div class="friends-chat-content">
               <p class="friends-chat-name">${user.username}</p>
               <p class="friends-chat-balloon">${item.content}</p>
-              <h5 class="chat-datetime">Sun, Aug 30 | 15:41</h5>
+              <h5 class="chat-datetime">${date.d}, ${date.m} ${date.day} | ${date.t}</h5>
             </div>
           </div>`;
     else
-      chatItem.innerHTML = `<!-- YOUR CHAT TEMPLATE -->
+      chatArea.innerHTML += `<!-- YOUR CHAT TEMPLATE -->
           <div id="your-chat" class="your-chat">
             <p class="your-chat-balloon">${item.content}</p>
             <p class="chat-datetime">
-              <span class="glyphicon glyphicon-ok"></span> Sun, Aug 30 | 15:45
+              <span class="glyphicon glyphicon-ok"></span> ${date.d}, ${date.m} ${date.day} | ${date.t}
             </p>
           </div>`;
-    chatArea.appendChild(chatItem.cloneNode(true));
   });
   scrollToBottom();
 };
 
 // loadConversationsWith
-const loadConversationsWith = user => {
+const loadConversationsWith = (user) => {
   // loading = true;
   fetch('/v1/api/chat/' + user.id + '/messages', {
     method: 'GET',
@@ -329,13 +294,13 @@ const loadConversationsWith = user => {
       Authorization: 'Bearer ' + userData.accessToken,
     },
   })
-    .then(resp => {
+    .then((resp) => {
       if (resp.status === 401) {
         alert('Please login to reconnect');
         location.href = './signin.html';
       }
 
-      resp.json().then(data => {
+      resp.json().then((data) => {
         if (!messages[user.id]) messages[user.id] = [];
         messages[user.id] = Array.from(data);
         conversations = Array.from(data);
@@ -343,14 +308,8 @@ const loadConversationsWith = user => {
         // loading = false;
       });
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
       // loading = false;
     });
 };
-
-$('.friend-drawer--onhover').on('click', function() {
-  $('.chat-bubble')
-    .hide('slow')
-    .show('slow');
-});

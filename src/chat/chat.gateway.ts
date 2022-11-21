@@ -5,12 +5,11 @@ import {
   WebSocketServer,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { Socket, Client, Server } from 'socket.io';
+import { Socket, Server } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { Logger } from '@nestjs/common';
-import { jwtConstants } from '../config/jwt.config';
 
-@WebSocketGateway({ namespace: 'chat' })
+@WebSocketGateway({ namespace: 'chat', transports: ['websocket'] })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   logger = new Logger('ChatGateway');
   onlineUsers = new Set();
@@ -56,7 +55,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private getUser(socket: Socket) {
     const token = socket.handshake.query.token;
-    const user: any = this.jwtService.decode(token);
+    const user: any = this.jwtService.decode(token.toString());
     return user;
   }
 }

@@ -5,28 +5,25 @@ import {
   ValidationPipe,
   UseInterceptors,
   ClassSerializerInterceptor,
-  UseGuards,
   Get,
-  Req,
   Query,
 } from '@nestjs/common';
-import { CreateUserDTO } from './dto/create-user.dto';
-import { AuthService } from './auth.service';
-import { NotNullPipe } from './pipes/not-null.pipe';
 import {
-  ApiUseTags,
+  ApiTags,
   ApiBadRequestResponse,
   ApiOkResponse,
   ApiProduces,
   ApiUnauthorizedResponse,
   ApiCreatedResponse,
-  ApiImplicitQuery,
 } from '@nestjs/swagger';
+
+import { CreateUserDTO } from './dto/create-user.dto';
+import { AuthService } from './auth.service';
+import { NotNullPipe } from './pipes/not-null.pipe';
 import { AuthUserDTO } from './dto/auth-user.dto';
 import { JwtPayloadReponse } from './jwt-payload.interface';
-import { AuthGuard } from '@nestjs/passport';
 
-@ApiUseTags('Authentication')
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -67,15 +64,5 @@ export class AuthController {
   async refreshToken(@Query('accessToken', NotNullPipe) accessToken: string) {
     console.log(accessToken);
     return this.authService.refreshToken(accessToken);
-  }
-
-  @UseGuards(AuthGuard('facebook-token'))
-  @Get('facebook')
-  @ApiImplicitQuery({ name: 'session_token', type: String })
-  async getTokenAfterFacebookSignIn(@Req() req) {
-    const authUserDTO = new AuthUserDTO();
-    authUserDTO.password = req.user.password;
-    authUserDTO.username = req.user.username;
-    return this.authService.signin(authUserDTO, true);
   }
 }

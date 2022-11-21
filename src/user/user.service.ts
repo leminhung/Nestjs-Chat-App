@@ -1,16 +1,22 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import * as bcriptjs from 'bcryptjs';
 import { UserRepository } from './user.repository';
 import { User } from './user.entity';
 import { ChatGateway } from '../chat/chat.gateway';
 import { FilterUserDTO } from './dto/filter-user.dto';
-import * as bcriptjs from 'bcryptjs';
 
 @Injectable()
 export class UserService {
+  constructor(
+    private userRepository: UserRepository,
+    private chatGateway: ChatGateway,
+  ) {}
+
   async findOrCreateSocialUser(profile: any) {
     let user = await this.userRepository.findOne({
-      username: profile.displayName,
+      where: {
+        username: profile.displayName,
+      },
     });
     if (!user) {
       const salt = await bcriptjs.genSalt();
@@ -28,14 +34,9 @@ export class UserService {
     }
     return user;
   }
-  constructor(
-    @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
-    private chatGateway: ChatGateway,
-  ) {}
 
   async findUserbyEmail(email: string) {
-    const user = await this.userRepository.findOne({ email });
+    const user = await this.userRepository.findOne({ where: { email } });
     return user;
   }
 
@@ -54,6 +55,6 @@ export class UserService {
   }
 
   async getUsers(filter: FilterUserDTO): Promise<User[]> {
-    return this.userRepository.getUsers(filter);
+    return await this.userRepository.getUsers(filter);
   }
 }

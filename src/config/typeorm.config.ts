@@ -6,7 +6,7 @@ export const TYPEORMCONFIG: TypeOrmModuleOptions = {
   username: 'root',
   port: 3306,
   type: 'mysql',
-  entities: [__dirname + '/../**/*.entity{.js,.ts}'],
+  entities: [__dirname + '/../**/*.entity.{js,ts}'],
   synchronize: true,
   password: '12345678',
 };

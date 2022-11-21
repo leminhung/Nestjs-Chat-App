@@ -9,7 +9,6 @@ import { UserService } from '../user/user.service';
 import * as bcriptjs from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { AuthUserDTO } from './dto/auth-user.dto';
-import { SignOptions } from 'jsonwebtoken';
 import { jwtConstants } from '../config/jwt.config';
 
 @Injectable()
