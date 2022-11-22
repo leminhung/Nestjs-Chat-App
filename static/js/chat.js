@@ -47,7 +47,9 @@ const addUsersToView = (user, lastMsg, senderName) => {
     `)">
       <!-- photo -->
       <div class="profile friends-photo">
-        <img src="images/MinhHung.jpg" alt="" />
+        <img src="users/${user?.avatar ? user?.avatar : 'MinhHung.jpg'}" alt="${
+      user.username
+    }" />
       </div>
 
       <div class="friends-credent">
@@ -183,12 +185,16 @@ const receiveMessage = (msg) => {
     chatArea.innerHTML += `
           <div id="friends-chat" class="friends-chat">
             <div class="profile friends-chat-photo">
-              <img src="images/MinhHung.jpg" alt="" />
+              <img src="users/${
+                user?.avatar ? user?.avatar : 'MinhHung.jpg'
+              }" alt="${user.username}" />
             </div>
             <div class="friends-chat-content">
               <p class="friends-chat-name">${user?.username}</p>
               <p class="friends-chat-balloon">${msg.content}</p>
-              <h5 class="chat-datetime">${date.d}, ${date.m} ${date.day} | ${date.t}</h5>
+              <h5 class="chat-datetime">${date.d}, ${date.m} ${date.day} | ${
+      date.t
+    }</h5>
             </div>
           </div>`;
   else if (userData.data.id === msg.senderId)
@@ -264,12 +270,16 @@ const addMessageToView = (user, conversations) => {
       chatArea.innerHTML += `<!-- FRIENDS CHAT TEMPLATE -->
           <div id="friends-chat" class="friends-chat">
             <div class="profile friends-chat-photo">
-              <img src="images/MinhHung.jpg" alt="" />
+              <img src="users/${
+                user?.avatar ? user?.avatar : 'MinhHung.jpg'
+              }" alt="${user.username}" />
             </div>
             <div class="friends-chat-content">
               <p class="friends-chat-name">${user.username}</p>
               <p class="friends-chat-balloon">${item.content}</p>
-              <h5 class="chat-datetime">${date.d}, ${date.m} ${date.day} | ${date.t}</h5>
+              <h5 class="chat-datetime">${date.d}, ${date.m} ${date.day} | ${
+        date.t
+      }</h5>
             </div>
           </div>`;
     else

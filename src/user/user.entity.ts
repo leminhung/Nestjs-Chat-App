@@ -24,6 +24,10 @@ export class User {
   country: string;
 
   @Column()
+  @ApiProperty()
+  avatar: string;
+
+  @Column()
   @Exclude()
   password: string;
 

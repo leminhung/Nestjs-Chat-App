@@ -32,8 +32,6 @@ export class UserController {
     @Query() filter: FilterUserDTO,
   ): Promise<User[]> {
     const users: User[] = await this.userService.getUsers(filter);
-    console.log('user---', user);
-
     return users
       .map((u) => {
         delete u.password;
