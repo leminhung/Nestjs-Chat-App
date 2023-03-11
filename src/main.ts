@@ -5,7 +5,7 @@ import {
   DocumentBuilder,
   SwaggerCustomOptions,
 } from '@nestjs/swagger';
-import { Logger } from '@nestjs/common';
+import { Logger, RequestMethod } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 
@@ -13,7 +13,15 @@ async function bootstrap() {
   const logger = new Logger('boostrapp');
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useStaticAssets(join(__dirname, '..', 'static'));
-  app.setGlobalPrefix('v1/api');
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.setViewEngine('ejs');
+  app.setGlobalPrefix('v1/api', {
+    exclude: [
+      { path: '/signin', method: RequestMethod.GET },
+      { path: '/signup', method: RequestMethod.GET },
+      { path: '/chat', method: RequestMethod.GET },
+    ],
+  });
   app.enableCors();
 
   const options = new DocumentBuilder()
@@ -21,7 +29,7 @@ async function bootstrap() {
     .addServer('v1/api')
     .addBearerAuth(
       {
-        description: `This API has beenn created to help developers to prototypate theirs apps easily`,
+        description: `This API has been created to help developers to prototypate theirs apps easily`,
         name: 'Authorization',
         bearerFormat: 'Bearer',
         scheme: 'Bearer',

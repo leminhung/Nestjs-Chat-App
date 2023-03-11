@@ -7,6 +7,7 @@ import {
   ClassSerializerInterceptor,
   Get,
   Query,
+  Render,
 } from '@nestjs/common';
 import {
   ApiTags,

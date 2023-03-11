@@ -19,6 +19,7 @@ export class ConversationRepository extends Repository<Conversation> {
     filter: FilterConversation,
   ): Promise<Conversation[]> {
     const query = this.createQueryBuilder('conversations');
+    console.log({ senderId, receiverId });
 
     if (receiverId !== null) {
       query
@@ -54,7 +55,7 @@ export class ConversationRepository extends Repository<Conversation> {
       query.limit(filter.limit);
     }
 
-    return query.orderBy('createdAt', 'ASC').getMany();
+    return query.orderBy('id', 'ASC').getMany();
   }
 
   async saveConversation(
@@ -71,7 +72,7 @@ export class ConversationRepository extends Repository<Conversation> {
 
   async markAllBeforeAsRead(conversation: MarkAsReadConversationDTO) {
     const q = this.createQueryBuilder('conversations')
-      .update({ readAt: new Date().toISOString() })
+      .update({ readAt: new Date().toString() })
       .andWhere(
         '(senderId=:senderId and receiverId=:receiverId) or (senderId=:receiverId and receiverId=:senderId)',
         {
@@ -80,7 +81,7 @@ export class ConversationRepository extends Repository<Conversation> {
         },
       )
       .andWhere('createdAt <= :createdAt', {
-        createdAt: new Date(conversation.createdAt).toISOString(),
+        createdAt: new Date(conversation.createdAt).toString(),
       })
       .andWhere('readAt IS NULL');
     const result = await q.execute();

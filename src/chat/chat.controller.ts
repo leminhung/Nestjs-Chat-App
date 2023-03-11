@@ -20,7 +20,6 @@ import { Conversation } from './conversation.entity';
 import { MarkAsReadConversationDTO } from './dto/markAsRead.dto';
 import {
   ApiTags,
-  ApiParam,
   ApiResponse,
   ApiQuery,
   ApiBearerAuth,
@@ -41,11 +40,6 @@ export class ChatController {
   constructor(private conversationService: ConversationService) {}
 
   @Post(':receiverId/sendMessage')
-  // @ApiParam({
-  //   enumName: 'receiverId',
-  //   type: Number,
-  //   name: 'receiverId',
-  // })
   @ApiBody({ type: String })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiOperation({
@@ -64,18 +58,17 @@ export class ChatController {
   }
 
   @Get(':receiverId/messages')
-  // @ApiParam({ name: 'receiverId', type: Number })
   @ApiOkResponse({ type: Conversation, isArray: true })
   @ApiOperation({
     summary:
       'Retrieve all messages of the current user with the receiverId user',
   })
-  getMessages(
+  async getMessages(
     @GetUser() user: User,
     @Param('receiverId', ParseIntPipe) receiverId: number,
     @Query() filter: FilterConversation,
   ) {
-    return this.conversationService.getConversation(
+    return await this.conversationService.getConversation(
       user.id,
       receiverId,
       filter,

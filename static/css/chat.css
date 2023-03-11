@@ -188,7 +188,6 @@ body {
 }
 
 .header-right {
-  /* border: 5px solid greenyellow; */
   padding: 5px;
   background: white;
   display: grid;
@@ -209,14 +208,12 @@ body {
 }
 
 .friend-name {
-  /* border: 5px solid violet; */
   place-self: center start;
   margin-left: 20px;
   color: #485373;
 }
 
 .some-btn {
-  /* border: 5px solid maroon; */
   font-size: 1.5em;
   place-items: center end;
 }
@@ -227,7 +224,6 @@ body {
 }
 
 .chat-area {
-  /* border: 5px solid lightseagreen; */
   overflow-y: auto;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -238,7 +234,6 @@ body {
 }
 
 .friends-chat {
-  /* border: 3px solid beige; */
   padding-top: 5px;
   padding-bottom: 5px;
   display: grid;
@@ -247,13 +242,11 @@ body {
 }
 
 .friends-chat-photo {
-  /* border: 3px solid orchid; */
   place-self: start end;
   margin: 0px 5px;
 }
 
 .friends-chat-content {
-  /* border: 3px solid red; */
   display: grid;
   grid-auto-flow: row;
   grid-template-rows: 1fr min-content min-content;
@@ -269,7 +262,6 @@ body {
 }
 
 .friends-chat-balloon {
-  /* border: 3px solid navy; */
   max-width: 90%;
   padding: 10px 20px;
   margin: 0;
@@ -282,7 +274,6 @@ body {
 }
 
 .chat-datetime {
-  /* border: 3px solid yellow; */
   margin: 3px 10px;
   font-size: 0.75em;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -290,7 +281,6 @@ body {
 }
 
 .your-chat {
-  /* border: 3px solid chocolate; */
   display: grid;
   padding-top: 5px;
   padding-bottom: 5px;
@@ -319,7 +309,6 @@ body {
 }
 
 .typing-area {
-  /* border: 5px solid goldenrod; */
   background: white;
   display: grid;
   grid-auto-flow: column;
@@ -357,7 +346,6 @@ input::placeholder {
 }
 
 .attach-btn {
-  /* border: 5px solid coral; */
   font-size: 1.25em;
 }
 
@@ -375,4 +363,20 @@ input::placeholder {
   text-align: center;
   color: #777;
   font-family: 'Courier New', Courier, monospace;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-left: -290px;
+  margin-top: 40px;
+}
+
+.online {
+  background-color: greenyellow;
+}
+
+.offline {
+  background-color: burlywood;
 }

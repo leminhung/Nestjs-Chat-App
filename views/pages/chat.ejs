@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="icon" href="./images/wechat.png" />
+    <link rel="icon" href="/images/wechat.png" />
     <title>Chat app</title>
   </head>
 
-  <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="./css/chat.css" />
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/css/chat.css" />
 
   <body>
     <div id="app" class="app">
@@ -30,7 +30,7 @@
         <div id="self-info" class="self-info">
           <!-- photo -->
           <div class="profile your-photo">
-            <img src="images/ava4.jpg" alt="" />
+            <img src="/images/ava4.jpg" alt="" />
           </div>
           <!-- name -->
           <h4 class="name your-name">Iqbal Taufiq</h4>
@@ -46,7 +46,7 @@
         <div id="header-right" class="header-right">
           <!-- profile pict -->
           <div id="header-img" class="profile header-img">
-            <img src="images/ava2.jpg" alt="" />
+            <img src="/images/ava2.jpg" alt="" />
           </div>
 
           <!-- name -->
@@ -65,16 +65,7 @@
           <!-- chat content -->
 
           <!-- FRIENDS CHAT TEMPLATE -->
-          <div id="friends-chat" class="friends-chat">
-            <!-- <div class="profile friends-chat-photo">
-              <img src="images/ava2.jpg" alt="" />
-            </div>
-            <div class="friends-chat-content">
-              <p class="friends-chat-name">Admin</p>
-              <p class="friends-chat-balloon">Yo Dybala!</p>
-              <h5 class="chat-datetime">Sun, Aug 30 | 15:41</h5>
-            </div> -->
-          </div>
+          <div id="friends-chat" class="friends-chat"></div>
         </div>
 
         <!-- typing area -->
@@ -103,9 +94,9 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <!-- jQuey, Popper, BootstrapJS -->
-    <script src="bootstrap/js/jquery-3.3.1.min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="./utils/index.js"></script>
-    <script src="./js/chat.js"></script>
+    <script src="/bootstrap/js/jquery-3.3.1.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/utils/index.js"></script>
+    <script src="/js/chat.js"></script>
   </body>
 </html>

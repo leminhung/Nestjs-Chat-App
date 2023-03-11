@@ -7,6 +7,7 @@ import { CreateConversationDTO } from './dto/create-conversation.dto';
 import { User } from '../user/user.entity';
 import { ChatGateway } from './chat.gateway';
 import { MarkAsReadConversationDTO } from './dto/markAsRead.dto';
+import { chatGatewayConst } from 'src/config/chat.config';
 
 Injectable();
 export class ConversationService {
@@ -29,8 +30,8 @@ export class ConversationService {
       createConversationDTO,
     );
 
-    this.chatGateway.wss.send(
-      // chatGatewayConst.newMessageToUserChannel + result.senderId,
+    this.chatGateway.wss.emit(
+      chatGatewayConst.newMessageToUserChannel + result.receiverId,
       result,
     );
     return result;

@@ -1,7 +1,7 @@
 const registerBtn = document.querySelector('.register');
 const loginBtn = document.querySelector('.login');
 
-const showToast = message => {
+const showToast = (message) => {
   var bgColors = [
       'linear-gradient(to right, #00b09b, #96c93d)',
       'linear-gradient(to right, #ff5f6d, #ffc371)',
@@ -20,7 +20,7 @@ const showToast = message => {
 
 var message;
 if (registerBtn != null)
-  registerBtn.addEventListener('click', e => {
+  registerBtn.addEventListener('click', (e) => {
     e.preventDefault();
 
     const nameElement = document.querySelector('.name');
@@ -40,7 +40,7 @@ if (registerBtn != null)
         country: countryElement.value.trim(),
       }),
     })
-      .then(resp => {
+      .then((resp) => {
         if (resp.status === 201) {
           emailElement.value = '';
           passwordElement.value = '';
@@ -49,21 +49,21 @@ if (registerBtn != null)
           showToast(message);
 
           setTimeout(() => {
-            location.href = './signin.html';
+            location.href = '/signin';
           }, 1000);
         } else {
-          resp.json().then(data => {
+          resp.json().then((data) => {
             showToast(data?.message);
           });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         showToast(err.message);
       });
   });
 
 if (loginBtn != null)
-  loginBtn.addEventListener('click', e => {
+  loginBtn.addEventListener('click', (e) => {
     console.log(registerBtn);
     e.preventDefault();
 
@@ -80,14 +80,13 @@ if (loginBtn != null)
         password: passwordElement.value.trim(),
       }),
     })
-      .then(resp => {
-        resp.json().then(data => {
+      .then((resp) => {
+        resp.json().then((data) => {
           if (resp.status === 201) {
-            console.log(data);
             message = 'Sign in successfully';
             localStorage.setItem('userData', JSON.stringify(data));
             setTimeout(() => {
-              location.href = '/chat.html';
+              location.href = '/chat';
             }, 1000);
           } else if (resp.status === 401) {
             message = data?.message;
@@ -97,7 +96,7 @@ if (loginBtn != null)
           showToast(message);
         });
       })
-      .catch(err => {
+      .catch((err) => {
         showToast(err.message);
       });
   });

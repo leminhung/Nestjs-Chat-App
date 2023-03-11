@@ -1,0 +1,9 @@
+1. Convert to ejs layout (done)
+2. Count unread messages
+3. Update online feature for user
+4. Send file, image,...
+5. Call video
+6. Custom layout
+
+24 -> 27: 1,2,3,4
+28 -> 3/12: 5,6
